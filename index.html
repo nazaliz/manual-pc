@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC-CORE | Manual Interactivo de Mantenimiento Preventivo y Correctivo</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              900: '#164e63',
+            },
+            dark: {
+              bg: '#090d16',
+              surface: '#0f172a',
+              card: '#1e293b',
+              border: '#334155'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950 bg-grid-pattern relative">
+
+  <!-- Background Decorative Canvas for Circuits/Particles -->
+  <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-50 glass-panel border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-slate-950 shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+          <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <span class="text-lg font-black tracking-wider bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">PC-CORE</span>
+          <span class="text-xs block text-slate-400 font-mono tracking-tight">TECH MANUAL 360°</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+        <a href="#preventivo" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Preventivo
+        </a>
+        <a href="#correctivo" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="wrench" class="w-4 h-4 text-rose-400"></i> Correctivo
+        </a>
+        <a href="#doctor-pc" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="stethoscope" class="w-4 h-4 text-cyan-400"></i> Doctor PC
+        </a>
+        <a href="#comandos" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i> Comandos
+        </a>
+        <a href="#checklist" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="check-square" class="w-4 h-4 text-sky-400"></i> Checklist
+        </a>
+        <a href="#seguridad" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Seguridad
+        </a>
+      </nav>
+
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Print Button -->
+        <button onclick="window.print()" title="Imprimir o Guardar en PDF" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700 no-print flex items-center gap-1.5 text-xs font-mono">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Exportar / Imprimir</span>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-btn" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white md:hidden border border-slate-700">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden glass-panel border-b border-slate-800 px-4 py-3 space-y-2">
+      <a href="#preventivo" class="block py-2 text-slate-200 hover:text-cyan-400 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Preventivo</a>
+      <a href="#correctivo" class="block py-2 text-slate-200 hover:text-cyan-400 flex items-center gap-2"><i data-lucide="wrench" class="w-4 h-4 text-rose-400"></i> Correctivo</a>
+      <a href="#doctor-pc" class="block py-2 text-slate-200 hover:text-cyan-400 flex items-center gap-2"><i data-lucide="stethoscope" class="w-4 h-4 text-cyan-400"></i> Doctor PC (Diagnóstico)</a>
+      <a href="#comandos" class="block py-2 text-slate-200 hover:text-cyan-400 flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i> Comandos Esenciales</a>
+      <a href="#checklist" class="block py-2 text-slate-200 hover:text-cyan-400 flex items-center gap-2"><i data-lucide="check-square" class="w-4 h-4 text-sky-400"></i> Checklist de Rutina</a>
+      <a href="#seguridad" class="block py-2 text-slate-200 hover:text-cyan-400 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Decálogo de Seguridad</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10">
+    <div class="text-center max-w-4xl mx-auto space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono tracking-wide">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        MANUAL DIGITAL TÉCNICO INTERACTIVO V2.5
+      </div>
+      
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+        Mantenimiento <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Preventivo</span> & <span class="bg-gradient-to-r from-rose-400 via-orange-400 to-amber-400 bg-clip-text text-transparent">Correctivo</span> de PC
+      </h1>
+
+      <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
+        Domina el cuidado integral de tu computadora. Protocolos paso a paso, resolución quirúrgica de fallas, diagnósticos interactivos y comandos clave tanto para <strong class="text-cyan-300 font-semibold">Hardware</strong> como para <strong class="text-indigo-300 font-semibold">Software</strong>.
+      </p>
+
+      <!-- Key Metrics Counter Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 max-w-3xl mx-auto">
+        <div class="glass-card rounded-xl p-3 border-emerald-500/20 text-center">
+          <div class="text-2xl font-bold text-emerald-400 font-mono">100%</div>
+          <div class="text-xs text-slate-400">Cobertura HW & SW</div>
+        </div>
+        <div class="glass-card rounded-xl p-3 border-cyan-500/20 text-center">
+          <div class="text-2xl font-bold text-cyan-400 font-mono">40+</div>
+          <div class="text-xs text-slate-400">Soluciones Técnicas</div>
+        </div>
+        <div class="glass-card rounded-xl p-3 border-amber-500/20 text-center">
+          <div class="text-2xl font-bold text-amber-400 font-mono">24/7</div>
+          <div class="text-xs text-slate-400">Triage Asistido</div>
+        </div>
+        <div class="glass-card rounded-xl p-3 border-indigo-500/20 text-center">
+          <div class="text-2xl font-bold text-indigo-400 font-mono">3-2-1</div>
+          <div class="text-xs text-slate-400">Estrategia Respaldo</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+        <a href="#preventivo" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition-all hover:scale-105">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+          Guía Preventiva
+        </a>
+        <a href="#correctivo" class="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 text-white font-semibold text-sm shadow-lg shadow-rose-600/30 flex items-center gap-2 transition-all hover:scale-105">
+          <i data-lucide="wrench" class="w-5 h-5"></i>
+          Guía Correctiva
+        </a>
+        <a href="#doctor-pc" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 font-semibold text-sm flex items-center gap-2 transition-all hover:border-cyan-400">
+          <i data-lucide="stethoscope" class="w-5 h-5 text-cyan-400"></i>
+          Doctor PC (Diagnóstico)
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Global Filter and Real-Time Search Bar -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 z-10 relative">
+    <div class="glass-panel rounded-2xl p-4 sm:p-6 border border-slate-800 shadow-xl">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Live Search Box -->
+        <div class="relative w-full md:w-96">
+          <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Buscar por síntoma, componente o error (ej. RAM, BSOD, calor)..." 
+            class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-sans"
+          >
+          <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Filter Buttons: All, Preventivo, Correctivo -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <span class="text-xs font-mono text-slate-400 mr-1 hidden sm:inline">TIPO:</span>
+          <button class="filter-btn active px-3.5 py-1.5 rounded-lg text-xs font-medium bg-cyan-600 text-white transition-all" data-filter="all">
+            Todos
+          </button>
+          <button class="filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all" data-filter="preventivo">
+            🛡️ Solo Preventivo
+          </button>
+          <button class="filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all" data-filter="correctivo">
+            🔧 Solo Correctivo
+          </button>
+          <div class="h-4 w-px bg-slate-700 mx-1 hidden sm:block"></div>
+          <span class="text-xs font-mono text-slate-400 mr-1 hidden sm:inline">CAPA:</span>
+          <button class="subfilter-btn active px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-cyan-300 border border-cyan-500/40" data-subfilter="all">
+            HW + SW
+          </button>
+          <button class="subfilter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:text-white border border-transparent" data-subfilter="hw">
+            💻 Hardware
+          </button>
+          <button class="subfilter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:text-white border border-transparent" data-subfilter="sw">
+            ⚙️ Software
+          </button>
+        </div>
+      </div>
+      <div id="search-feedback" class="text-xs text-cyan-400 font-mono mt-3 hidden">
+        Mostrando resultados para: <span id="search-query-text" class="font-bold underline"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 z-10 relative flex-1 pb-20">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: MANTENIMIENTO PREVENTIVO       -->
+    <!-- ========================================== -->
+    <section id="preventivo" class="guide-section space-y-8" data-category="preventivo">
+      
+      <!-- Section Header -->
+      <div class="border-b border-slate-800 pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono mb-2">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i> ENFOQUE PROACTIVO
+          </div>
+          <h2 class="text-3xl font-extrabold text-white flex items-center gap-3">
+            Mantenimiento Preventivo
+          </h2>
+          <p class="text-slate-400 text-sm mt-1 max-w-2xl">
+            Conjunto de acciones periódicas y programadas orientadas a prolongar la vida útil del equipo, evitar fallas catastróficas y mantener el máximo rendimiento.
+          </p>
+        </div>
+        <div class="text-xs font-mono text-emerald-400/90 bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60">
+          Objetivo: 0% tiempos de inactividad no planificados
+        </div>
+      </div>
+
+      <!-- HARDWARE PREVENTIVO -->
+      <div class="content-block space-y-4" data-type="hw">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-slate-100">1.1 Preventivo de Hardware (Físico)</h3>
+            <span class="text-xs text-slate-400">Protección tangible, térmica y electromecánica</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Card 1: Limpieza de Polvo y Ventilación -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="limpieza polvo ventiladores aire comprimido pasta termica disipador temperatura">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Frecuencia: 3 a 6 meses</span>
+                <i data-lucide="fan" class="w-5 h-5 text-slate-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Limpieza Física y Flujo de Aire</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                El polvo es el enemigo #1: actúa como aislante térmico, aumentando la temperatura y provocando desgaste prematuro en soldaduras y ventiladores.
+              </p>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li><strong class="text-slate-100">Aire comprimido:</strong> Aplicar ráfagas cortas sujetando las aspas del ventilador para no dañarlos por inducción inversa.</li>
+                <li><strong class="text-slate-100">Filtros antipolvo:</strong> Lavar con agua si son magnéticos y secar al 100% antes de montar.</li>
+                <li><strong class="text-slate-100">Presión positiva:</strong> Asegurar más flujo de entrada de aire filtrado que de escape para expulsar el polvo.</li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Herramienta: Aire seco / Brocha antiestática</span>
+              <button onclick="openModal('limpieza-hw')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Ver Guía <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Renovación de Pasta Térmica -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="pasta termica disipador calor procesador cpu gpu thermal paste">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Frecuencia: 1 a 2 años</span>
+                <i data-lucide="flame" class="w-5 h-5 text-amber-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Renovación de Pasta Térmica</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                Con el paso del tiempo, la pasta térmica entre el IHS del CPU/GPU y el disipador se seca, pierde conductividad y causa estrangulamiento térmico (thermal throttling).
+              </p>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li>Limpiar residuo viejo con <strong class="text-slate-100">Alcohol Isopropílico al 99%</strong> y paño microfibra sin pelusa.</li>
+                <li>Aplicar cantidad adecuada (tamaño de un guisante / método de la X).</li>
+                <li>Apretar tornillos en cruz alternada para asegurar presión homogénea.</li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Conductividad: >8.5 W/mK</span>
+              <button onclick="openModal('pasta-termica')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Ver Guía <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Acondicionamiento Eléctrico y UPS -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="energia electrica ups no break regulador psu fuente tierra fisica picos">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Monitoreo Continuo</span>
+                <i data-lucide="zap" class="w-5 h-5 text-amber-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Protección Eléctrica y Entorno</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                Más del 40% de los daños catastróficos en tarjetas madre y fuentes de poder provienen de fluctuaciones de voltaje, sobretensiones o falta de tierra física.
+              </p>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li><strong class="text-slate-100">Uso de UPS (No-Break):</strong> Proporciona respaldo de batería y regula picos de tensión.</li>
+                <li><strong class="text-slate-100">Verificar toma a tierra:</strong> Nunca arrancar la clavija redonda de tierra.</li>
+                <li><strong class="text-slate-100">Ubicación física:</strong> Mantener el gabinete a mínimo 15 cm de muros y nunca sobre alfombras directas.</li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Recomendación: UPS 800VA+</span>
+              <button onclick="openModal('energia-prev')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Ver Guía <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SOFTWARE PREVENTIVO -->
+      <div class="content-block space-y-4 pt-4" data-type="sw">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
+            <i data-lucide="code" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-slate-100">1.2 Preventivo de Software (Lógico)</h3>
+            <span class="text-xs text-slate-400">Salud del sistema operativo, seguridad y respaldos</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card 4: Estrategia de Respaldos 3-2-1 -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="respaldo backup regla 321 nube disco duro externo copias seguridad">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">Frecuencia: Semanal / Diario</span>
+                <i data-lucide="hard-drive-download" class="w-5 h-5 text-indigo-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Estrategia de Respaldos (Regla 3-2-1)</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                El hardware se puede reemplazar, los datos no. La regla 3-2-1 es el estándar de oro universal de la industria:
+              </p>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li><strong class="text-cyan-300">3 Copias de datos:</strong> El original de trabajo y dos respaldos.</li>
+                <li><strong class="text-cyan-300">2 Medios distintos:</strong> Ejemplo: SSD interno + Disco Externo USB.</li>
+                <li><strong class="text-cyan-300">1 Copia fuera de sitio:</strong> En la nube (OneDrive, Google Drive, Backblaze).</li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Protección anti-ransomware</span>
+              <button onclick="openModal('backup-321')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Ver Guía <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 5: Mantenimiento de Almacenamiento SSD vs HDD -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="almacenamiento ssd hdd trim desfragmentacion temporales cache disco lleno">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">Frecuencia: Mensual</span>
+                <i data-lucide="database" class="w-5 h-5 text-sky-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Optimización de SSD & HDD</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                El trato entre unidades de estado sólido (SSD NVMe/SATA) y discos duros mecánicos (HDD) es completamente opuesto:
+              </p>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li><strong class="text-rose-400">¡NUNCA desfragmentar un SSD!:</strong> Agota los ciclos de escritura y no mejora la velocidad. Solo ejecutar comando TRIM.</li>
+                <li><strong class="text-emerald-400">HDD mecánicos:</strong> Desfragmentar cada 2-3 meses si el índice supera el 10%.</li>
+                <li>Mantener siempre al menos un <strong class="text-slate-100">15-20% de espacio libre</strong> para el archivo de paginación y sobreaprovisionamiento.</li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Comando: Optimize-Volume</span>
+              <button onclick="openModal('ssd-opt')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Ver Guía <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 6: Blindaje, Seguridad y Actualizaciones -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="seguridad antivirus parches windows update defender firewall malware inicio">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">Frecuencia: Semanal</span>
+                <i data-lucide="shield-alert" class="w-5 h-5 text-emerald-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Seguridad y Puesta a Punto</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                Mantener la superficie de ataque reducida y evitar el bloatware en el arranque del sistema operativo.
+              </p>
+              <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+                <li><strong class="text-slate-100">Parches del SO:</strong> Instalar actualizaciones críticas mensuales de Windows Update o del kernel de Linux.</li>
+                <li><strong class="text-slate-100">Programas de inicio:</strong> En el Administrador de Tareas, deshabilitar aplicaciones con alto impacto en arranque.</li>
+                <li><strong class="text-slate-100">Puntos de Restauración:</strong> Verificar que la protección del sistema esté activa y crear un punto mensual.</li>
+              </ul>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Configuración: msconfig / taskmgr</span>
+              <button onclick="openModal('seguridad-sw')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Ver Guía <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: MANTENIMIENTO CORRECTIVO       -->
+    <!-- ========================================== -->
+    <section id="correctivo" class="guide-section space-y-8" data-category="correctivo">
+      
+      <!-- Section Header -->
+      <div class="border-b border-slate-800 pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono mb-2">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> ENFOQUE REACTIVO / DIAGNÓSTICO
+          </div>
+          <h2 class="text-3xl font-extrabold text-white flex items-center gap-3">
+            Mantenimiento Correctivo
+          </h2>
+          <p class="text-slate-400 text-sm mt-1 max-w-2xl">
+            Protocolos técnicos orientados a localizar la causa raíz, aislar la falla y reparar o reemplazar componentes dañados una vez manifestado el problema.
+          </p>
+        </div>
+        <div class="text-xs font-mono text-rose-400/90 bg-rose-950/40 px-3 py-2 rounded-lg border border-rose-900/60">
+          Metodología: Aislar -> Diagnosticar -> Reparar -> Verificar
+        </div>
+      </div>
+
+      <!-- HARDWARE CORRECTIVO -->
+      <div class="content-block space-y-4" data-type="hw">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-rose-500/10 text-rose-400">
+            <i data-lucide="tool" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-slate-100">2.1 Correctivo de Hardware (Fallas Físicas)</h3>
+            <span class="text-xs text-slate-400">Solución a fallos de encendido, memoria, video, alimentación y temperatura</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card 1: PC No Enciende (Muerte Eléctrica) -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="no enciende fuente de poder psu tarjeta madre corto boton power cable">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-rose-400 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">Falla Crítica</span>
+                <i data-lucide="power-off" class="w-5 h-5 text-rose-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Equipo No Enciende (0 Señal)</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                El equipo no reacciona al presionar el botón de encendido: no hay luces, ni ventiladores girando.
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                <div class="font-bold text-cyan-400 font-mono">Protocolo de Diagnóstico:</div>
+                <p>1. Verificar cable AC y switch I/O posterior de la fuente.</p>
+                <p>2. Desconectar periféricos externos (posible corto por USB en corto).</p>
+                <p>3. <strong class="text-slate-100">Prueba del clip de papel (Paperclip Test):</strong> Puente entre el pin verde (PS_ON#) y cualquier pin negro (GND) del conector ATX 24 pines.</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Causa #1: PSU averiada o corto</span>
+              <button onclick="openModal('falla-no-enciende')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Solución Paso a Paso <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Enciende pero No Da Video (Pantalla Negra) -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="no da video pantalla negra ram pitidos beep codes gpu cmos bios">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">Falla Común</span>
+                <i data-lucide="monitor-x" class="w-5 h-5 text-amber-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Enciende sin Video / Pantalla Negra</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                Los ventiladores encienden y hay luces LED en el gabinete, pero el monitor indica "Sin Señal".
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                <div class="font-bold text-cyan-400 font-mono">Causas y Acciones:</div>
+                <p>• <strong class="text-slate-100">Memoria RAM sulfatada:</strong> Extraer módulos, limpiar pines con goma de borrar suave y alcohol isopropílico.</p>
+                <p>• <strong class="text-slate-100">Probar un solo módulo RAM</strong> en diferentes ranuras (slots).</p>
+                <p>• <strong class="text-slate-100">Reset de CMOS:</strong> Retirar pila CR2032 por 5 minutos con el equipo desconectado.</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">POST / Debug LEDs</span>
+              <button onclick="openModal('falla-no-video')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Solución Paso a Paso <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Sobrecalentamiento y Apagados Súbitos -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="sobrecalentamiento apagado repentino thermal throttling temperatura alta cpu">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-rose-400 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">Falla Térmica</span>
+                <i data-lucide="thermometer-snowflake" class="w-5 h-5 text-rose-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Apagón Repentino por Temperatura</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                La PC se apaga bruscamente al exigirle carga de trabajo (juegos, renderizado o multitarea pesada).
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                <div class="font-bold text-cyan-400 font-mono">Mecanismo de Defensa (Tjunction):</div>
+                <p>• Si el procesador supera los 95°-105°C, la placa madre corta la energía para evitar fundir el silicio.</p>
+                <p>• Verificar que la bomba del enfriamiento líquido (AIO) vibre y no esté trabada.</p>
+                <p>• Retirar el plástico protector de la base del disipador (error frecuente de ensamble).</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Software test: HWMonitor / HWiNFO</span>
+              <button onclick="openModal('falla-temperatura')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Solución Paso a Paso <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SOFTWARE CORRECTIVO -->
+      <div class="content-block space-y-4 pt-4" data-type="sw">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+            <i data-lucide="terminal" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-slate-100">2.2 Correctivo de Software (Fallas del Sistema y Datos)</h3>
+            <span class="text-xs text-slate-400">Reparación de BSOD, bucles de arranque, virus y corrupción del sistema</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card 4: Pantalla Azul BSOD -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="bsod pantalla azul blue screen kernel memory management driver crash">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">Error de Kernel</span>
+                <i data-lucide="alert-octagon" class="w-5 h-5 text-cyan-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Pantalla Azul de la Muerte (BSOD)</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                Parada crítica del sistema (Kernel Panic en Unix) producida cuando Windows no puede operar con seguridad.
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                <div class="font-bold text-cyan-400 font-mono">Códigos Clave:</div>
+                <p>• <code class="text-rose-400">MEMORY_MANAGEMENT</code>: Módulo RAM dañado o corrupto.</p>
+                <p>• <code class="text-amber-400">CRITICAL_PROCESS_DIED</code>: Archivo de sistema destruido.</p>
+                <p>• <code class="text-sky-400">DRIVER_IRQL_NOT_LESS_OR_EQUAL</code>: Driver en conflicto (GPU/Red).</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Herramienta: BlueScreenView / WinDbg</span>
+              <button onclick="openModal('falla-bsod')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Solución Paso a Paso <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 5: Infección por Malware / Ransomware -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="malware virus ransomware troyano rescate modo seguro limpiar desinfectar">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-rose-400 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">Amenaza de Seguridad</span>
+                <i data-lucide="skull" class="w-5 h-5 text-rose-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Infección por Malware / Virus</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                Comportamiento anómalo: pop-ups, secuestro del navegador, archivos encriptados o consumo silencioso por minado de criptomonedas.
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                <div class="font-bold text-cyan-400 font-mono">Contención Inmediata:</div>
+                <p>1. <strong class="text-rose-300">Desconectar internet</strong> (cable Ethernet y Wi-Fi) de inmediato.</p>
+                <p>2. Arrancar en <strong class="text-slate-100">Modo Seguro (Safe Mode)</strong>.</p>
+                <p>3. Ejecutar escaneo offline con Windows Defender Offline y Malwarebytes.</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Contención de Red</span>
+              <button onclick="openModal('falla-malware')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Solución Paso a Paso <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 6: Bucle de Reparación / No Inicia Windows -->
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between card-item" data-keywords="no inicia windows bucle reparacion automatica bcd mbr bootrec winre boot loop">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">Falla de Arranque</span>
+                <i data-lucide="refresh-cw" class="w-5 h-5 text-amber-400"></i>
+              </div>
+              <h4 class="text-lg font-bold text-white">Bucle de Reparación Automática</h4>
+              <p class="text-slate-300 text-xs leading-relaxed">
+                El sistema intenta arrancar pero muestra indefinidamente la pantalla "Preparando reparación automática" o falla de BCD.
+              </p>
+              <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                <div class="font-bold text-cyan-400 font-mono">Comandos de Reparación:</div>
+                <p>• Acceder a Símbolo del Sistema en WinRE.</p>
+                <p>• Ejecutar <code class="text-emerald-400">bootrec /fixmbr</code></p>
+                <p>• Ejecutar <code class="text-emerald-400">bootrec /rebuildbcd</code></p>
+                <p>• Corregir registro con <code class="text-emerald-400">sfc /scannow /offbootdir=C:\</code></p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 mt-4 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Entorno: Windows RE</span>
+              <button onclick="openModal('falla-boot')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1">
+                Solución Paso a Paso <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: DOCTOR PC (TRIAGE INTERACTIVO) -->
+    <!-- ========================================== -->
+    <section id="doctor-pc" class="scroll-mt-20">
+      <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-cyan-500/30 relative overflow-hidden shadow-2xl shadow-cyan-950/40">
+        <!-- Glow gradient ball -->
+        <div class="absolute -top-24 -right-24 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-3xl space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-mono">
+            <i data-lucide="stethoscope" class="w-4 h-4"></i> SISTEMA ASISTENTE DE DIAGNÓSTICO EN TIEMPO REAL
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+            Doctor PC: <span class="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">Triaje y Diagnóstico Interactivo</span>
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            ¿Tu equipo presenta un comportamiento extraño? Selecciona los síntomas a continuación y nuestro motor técnico te presentará la causa raíz más probable y el protocolo exacto de solución.
+          </p>
+
+          <!-- Interactive Form Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+            
+            <!-- Type Selector -->
+            <div>
+              <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">1. Área del Problema</label>
+              <select id="doctor-area" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                <option value="hw">Hardware (Físico / Componentes)</option>
+                <option value="sw">Software (Sistema / Rendimiento / Red)</option>
+              </select>
+            </div>
+
+            <!-- Symptom Selector -->
+            <div>
+              <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">2. Síntoma Principal</label>
+              <select id="doctor-symptom" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                <!-- Dynamically populated by JS -->
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Interactive Result Display Box -->
+          <div id="doctor-result" class="mt-8 rounded-2xl bg-slate-900/90 border border-cyan-500/40 p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+              <div class="flex items-center gap-3">
+                <div id="doctor-result-icon" class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+                  <i data-lucide="activity" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <h4 id="doctor-result-title" class="text-lg font-bold text-white">Selecciona un síntoma para comenzar</h4>
+                  <span id="doctor-result-prob" class="text-xs font-mono text-cyan-400">Probabilidad: --</span>
+                </div>
+              </div>
+              <span id="doctor-result-level" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-300">
+                Nivel de Riesgo: Normal
+              </span>
+            </div>
+
+            <div class="space-y-3 text-sm">
+              <div>
+                <strong class="text-slate-400 font-mono text-xs block mb-1">CAUSA RAÍZ ESTIMADA:</strong>
+                <p id="doctor-result-cause" class="text-slate-200 text-xs sm:text-sm"></p>
+              </div>
+
+              <div>
+                <strong class="text-slate-400 font-mono text-xs block mb-1">PROTOCOLO DE ACCIÓN RECOMENDADO:</strong>
+                <div id="doctor-result-steps" class="space-y-1.5 text-xs text-slate-300"></div>
+              </div>
+
+              <div id="doctor-result-command-box" class="hidden pt-2">
+                <strong class="text-slate-400 font-mono text-xs block mb-1">COMANDO DE DIAGNÓSTICO:</strong>
+                <div class="flex items-center justify-between bg-black/60 rounded-lg p-2.5 font-mono text-xs text-emerald-400 border border-emerald-500/20">
+                  <code id="doctor-result-command"></code>
+                  <button id="doctor-copy-btn" class="text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 text-xs">Copiar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 4: TERMINAL DE COMANDOS CLAVE     -->
+    <!-- ========================================== -->
+    <section id="comandos" class="space-y-6 scroll-mt-20">
+      <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <i data-lucide="terminal" class="w-7 h-7 text-amber-400"></i> Terminal de Comandos Técnicos
+          </h2>
+          <p class="text-slate-400 text-xs sm:text-sm mt-1">
+            Comandos esenciales de PowerShell y CMD para diagnóstico profundo, reparación de almacén y reseteo de red.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <!-- Command 1: SFC -->
+        <div class="glass-card rounded-xl p-4 flex flex-col justify-between border-slate-800">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded">Integridad SO</span>
+              <button onclick="copyCommand('sfc /scannow', this)" class="text-slate-400 hover:text-white" title="Copiar"><i data-lucide="copy" class="w-4 h-4"></i></button>
+            </div>
+            <code class="text-xs font-mono text-cyan-300 block bg-slate-900 p-2 rounded border border-slate-800">sfc /scannow</code>
+            <p class="text-[11px] text-slate-400">Escanea y repara archivos corruptos del sistema con copias limpias de Windows.</p>
+          </div>
+        </div>
+
+        <!-- Command 2: DISM -->
+        <div class="glass-card rounded-xl p-4 flex flex-col justify-between border-slate-800">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded">Imagen Windows</span>
+              <button onclick="copyCommand('DISM /Online /Cleanup-Image /RestoreHealth', this)" class="text-slate-400 hover:text-white" title="Copiar"><i data-lucide="copy" class="w-4 h-4"></i></button>
+            </div>
+            <code class="text-xs font-mono text-cyan-300 block bg-slate-900 p-2 rounded border border-slate-800 break-all">DISM /Online /Cleanup-Image /RestoreHealth</code>
+            <p class="text-[11px] text-slate-400">Restaura el almacén de componentes de Windows a través de Windows Update.</p>
+          </div>
+        </div>
+
+        <!-- Command 3: CHKDSK -->
+        <div class="glass-card rounded-xl p-4 flex flex-col justify-between border-slate-800">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">Salud Disco</span>
+              <button onclick="copyCommand('chkdsk C: /f /r', this)" class="text-slate-400 hover:text-white" title="Copiar"><i data-lucide="copy" class="w-4 h-4"></i></button>
+            </div>
+            <code class="text-xs font-mono text-cyan-300 block bg-slate-900 p-2 rounded border border-slate-800">chkdsk C: /f /r</code>
+            <p class="text-[11px] text-slate-400">Examina el sistema de archivos y localiza sectores defectuosos en el disco.</p>
+          </div>
+        </div>
+
+        <!-- Command 4: Flush DNS -->
+        <div class="glass-card rounded-xl p-4 flex flex-col justify-between border-slate-800">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded">Red & Conectividad</span>
+              <button onclick="copyCommand('ipconfig /flushdns', this)" class="text-slate-400 hover:text-white" title="Copiar"><i data-lucide="copy" class="w-4 h-4"></i></button>
+            </div>
+            <code class="text-xs font-mono text-cyan-300 block bg-slate-900 p-2 rounded border border-slate-800">ipconfig /flushdns</code>
+            <p class="text-[11px] text-slate-400">Vacía la caché DNS para resolver páginas que no cargan o conflictos de IP.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 5: CHECKLIST INTERACTIVO          -->
+    <!-- ========================================== -->
+    <section id="checklist" class="space-y-6 scroll-mt-20">
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+              <i data-lucide="check-square" class="w-7 h-7 text-sky-400"></i> Checklist de Rutina Técnica
+            </h2>
+            <p class="text-slate-400 text-xs sm:text-sm mt-1">
+              Marca las tareas completadas para calcular el índice de salud y mantenimiento preventivo de tu equipo.
+            </p>
+          </div>
+
+          <!-- Progress Widget -->
+          <div class="bg-slate-900 p-3 rounded-2xl border border-slate-700 min-w-[200px]">
+            <div class="flex items-center justify-between text-xs font-mono mb-1">
+              <span class="text-slate-400">PROGRESO</span>
+              <span id="checklist-progress-text" class="text-cyan-400 font-bold">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+              <div id="checklist-progress-bar" class="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Groups -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Mensual -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-mono font-bold text-cyan-400 tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span> RUTINA MENSUAL
+            </h4>
+            <div class="space-y-2" id="tasks-mensual">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Trimestral -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-mono font-bold text-emerald-400 tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> RUTINA TRIMESTRAL
+            </h4>
+            <div class="space-y-2" id="tasks-trimestral">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Semestral -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-mono font-bold text-indigo-400 tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-400"></span> RUTINA SEMESTRAL
+            </h4>
+            <div class="space-y-2" id="tasks-semestral">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-800 text-xs">
+          <span class="text-slate-400">Tus marcas se guardan automáticamente en tu navegador.</span>
+          <button id="reset-checklist-btn" class="text-rose-400 hover:text-rose-300 font-mono underline">
+            Reiniciar Checklist
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 6: DECÁLOGO DE SEGURIDAD (REGLAS) -->
+    <!-- ========================================== -->
+    <section id="seguridad" class="space-y-6 scroll-mt-20">
+      <div class="border-b border-slate-800 pb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono mb-2">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> SEGURIDAD TÉCNICA
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+          Decálogo de Oro: Seguridad y Manipulación
+        </h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">
+          Reglas inquebrantables antes de abrir un equipo o ejecutar modificaciones profundas en el sistema.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="glass-card rounded-2xl p-5 border-rose-500/30 bg-rose-950/20">
+          <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold mb-3">1</div>
+          <h4 class="text-sm font-bold text-white mb-1">¡NUNCA abras una Fuente (PSU)!</h4>
+          <p class="text-xs text-slate-300">Los capacitores internos retienen descargas eléctricas mortales durante semanas incluso desenchufada.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border-amber-500/30 bg-amber-950/20">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold mb-3">2</div>
+          <h4 class="text-sm font-bold text-white mb-1">Control de Estática (ESD)</h4>
+          <p class="text-xs text-slate-300">Usa pulsera antiestática o toca el metal sin pintar del gabinete antes de rozar circuitos integrados o chips de RAM.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border-cyan-500/30 bg-cyan-950/20">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold mb-3">3</div>
+          <h4 class="text-sm font-bold text-white mb-1">Cero Fuerza Bruta</h4>
+          <p class="text-xs text-slate-300">Cada conector (PCIe, SATA, RAM, CPU socket) posee guías o muescas. Si no entra suavemente, está en la posición errónea.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border-emerald-500/30 bg-emerald-950/20">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold mb-3">4</div>
+          <h4 class="text-sm font-bold text-white mb-1">Respaldo Previo Obligatorio</h4>
+          <p class="text-xs text-slate-300">Antes de cualquier formateo, actualización de BIOS o reemplazo de disco, asegúrate de tener una copia de seguridad externa.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Detail Modal -->
+  <div id="guide-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-2xl rounded-3xl border border-cyan-500/40 p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in duration-200">
+      
+      <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3">
+        <div id="modal-icon" class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span id="modal-badge" class="text-xs font-mono text-cyan-400 uppercase tracking-wider">GUÍA TÉCNICA</span>
+          <h3 id="modal-title" class="text-xl font-bold text-white">Título de la Guía</h3>
+        </div>
+      </div>
+
+      <div id="modal-body" class="text-sm text-slate-300 space-y-4 leading-relaxed pt-2">
+        <!-- Content inserted dynamically -->
+      </div>
+
+      <div class="pt-4 border-t border-slate-800 flex justify-end">
+        <button onclick="closeModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">
+          Entendido / Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cyan-500 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 text-xs font-mono pointer-events-none">
+    <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-text">Comando copiado al portapapeles</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-slate-950/80 text-slate-400 py-8 z-10 relative no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
+        <span>Manual Técnico PC-CORE &bull; Hardware & Software &bull; Guía de Usuario</span>
+      </div>
+      <div>
+        <span>Desarrollado con arquitectura moderna HTML5 / Tailwind / Vanilla JS</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
